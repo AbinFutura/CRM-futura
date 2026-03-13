@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:futura_crm_app/features/auth/view/home_sceen.dart';
+import 'package:futura_crm_app/core/naviagtion/app_router.dart';
+import 'package:futura_crm_app/core/theme/app_colors.dart';
 import 'package:futura_crm_app/features/auth/view_model.dart/auth_view_model.dart';
 import 'package:provider/provider.dart';
 import '../../../core/utils/app_toast.dart';
 
-
 class LoginScreen extends StatefulWidget {
-
   const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
-
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -19,10 +17,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final mobileController = TextEditingController();
   final passwordController = TextEditingController();
 
+  bool _obscurePassword = true;
+
   @override
   Widget build(BuildContext context) {
 
     final vm = context.watch<AuthViewModel>();
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
 
@@ -31,94 +32,134 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Padding(
           padding: const EdgeInsets.all(24),
 
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+          child: SingleChildScrollView(
 
-              const Text(
-                "CRM Login",
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF562B80),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+
+                /// CRM ICON
+                Container(
+                  height: 90,
+                  width: 90,
+
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+
+                    boxShadow: [
+                      BoxShadow(
+                        blurRadius: 20,
+                        color: Colors.black12,
+                        offset: Offset(0, 8),
+                      )
+                    ],
+                  ),
+
+                  child: const Icon(
+                    Icons.people_alt_outlined,
+                    size: 42,
+                    color: AppColors.primary,
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: 30),
+                const SizedBox(height: 20),
 
-              TextField(
-                controller: mobileController,
-                keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                  labelText: "Mobile Number",
+                /// TITLE
+                Text(
+                  "CRM Login",
+                  style: textTheme.titleLarge?.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: 16),
+                const SizedBox(height: 30),
 
-              TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: "Password",
+                /// MOBILE FIELD
+                TextField(
+                  controller: mobileController,
+                  keyboardType: TextInputType.phone,
+
+                  decoration: const InputDecoration(
+                    hintText: "Mobile Number",
+                    prefixIcon: Icon(Icons.phone),
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: 30),
+                const SizedBox(height: 16),
 
-              if (vm.isLoading)
-                const CircularProgressIndicator(),
+                /// PASSWORD FIELD
+                TextField(
+                  controller: passwordController,
+                  obscureText: _obscurePassword,
 
-              if (!vm.isLoading)
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
+                  decoration: InputDecoration(
+                    hintText: "Password",
+                    prefixIcon: const Icon(Icons.lock),
 
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF562B80),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
 
-                    onPressed: () async {
-
-                      final success = await vm.login(
-                        mobileController.text,
-                        passwordController.text,
-                      );
-
-                      if (success) {
-
-                        if (!mounted) return;
-
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const HomeScreen(),
-                          ),
-                          (route) => false,
-                        );
-
-                      } else {
-
-                        AppToast.show(vm.error ?? "Login failed");
-
-                      }
-
-                    },
-
-                    child: const Text(
-                      "Login",
-                      style: TextStyle(color: Colors.white),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
                     ),
                   ),
                 ),
 
-            ],
+                const SizedBox(height: 30),
+
+                if (vm.isLoading)
+                  const CircularProgressIndicator(),
+
+                if (!vm.isLoading)
+                  SizedBox(
+                    width: double.infinity,
+
+                    child: ElevatedButton(
+
+                      onPressed: () async {
+
+                        final success = await vm.login(
+                          mobileController.text,
+                          passwordController.text,
+                        );
+
+                        if (success) {
+
+                          if (!mounted) return;
+
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            MyAppRouter.root,
+                            (route) => false,
+                          );
+
+                        } else {
+
+                          AppToast.show(vm.error ?? "Login failed");
+
+                        }
+
+                      },
+
+                      child: const Text("Login"),
+
+                    ),
+                  ),
+
+              ],
+            ),
           ),
         ),
       ),
     );
-
   }
-
 }

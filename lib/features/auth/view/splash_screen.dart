@@ -1,23 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:futura_crm_app/features/auth/view/home_sceen.dart';
+import 'package:futura_crm_app/core/naviagtion/app_router.dart';
 import 'package:futura_crm_app/features/auth/view_model.dart/auth_view_model.dart';
 import 'package:provider/provider.dart';
 import '../../../core/storage/token_storage.dart';
 
-import '../view/login_screen.dart';
-
 
 class SplashScreen extends StatefulWidget {
-
   const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
-
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -25,7 +20,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkSession() async {
-
     final token = await TokenStorage.getAccessToken();
 
     if (token == null) {
@@ -36,50 +30,24 @@ class _SplashScreenState extends State<SplashScreen> {
     final vm = context.read<AuthViewModel>();
 
     try {
-
       await vm.loadUser();
 
       _goToHome();
-
     } catch (e) {
-
       _goToLogin();
-
     }
-
   }
 
-  void _goToLogin() {
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const LoginScreen(),
-      ),
-    );
-
+  _goToLogin() {
+    Navigator.pushReplacementNamed(context, MyAppRouter.login);
   }
 
-  void _goToHome() {
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const HomeScreen(),
-      ),
-    );
-
+  _goToHome() {
+    Navigator.pushReplacementNamed(context, MyAppRouter.root);
   }
 
   @override
   Widget build(BuildContext context) {
-
-    return const Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
-
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
-
 }

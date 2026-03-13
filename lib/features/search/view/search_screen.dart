@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-class LeadsScreen extends StatelessWidget {
-  const LeadsScreen({super.key});
+class SearchScreen extends StatelessWidget {
+  const SearchScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
         child: Text(
-          "Leads",
+          "Search",
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,

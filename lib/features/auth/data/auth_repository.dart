@@ -8,29 +8,27 @@ class AuthRepository {
 
   final AuthApiService _apiService = AuthApiService();
 
-  Future<LoginResponseModel> login(
-      String mobileNumber,
-      String password) async {
+Future<LoginResponseModel> login(
+    String mobileNumber,
+    String password) async {
 
-    final request = LoginRequestModel(
-      mobileNumber: mobileNumber,
-      password: password,
-    );
+  final request = LoginRequestModel(
+    mobileNumber: mobileNumber,
+    password: password,
+  );
 
-    final response =
-        await _apiService.login(request.toJson());
+  final response =
+      await _apiService.login(request.toJson());
 
-    final model =
-        LoginResponseModel.fromJson(response.data);
+  print("LOGIN RESPONSE HEADERS: ${response.headers.map}");
 
-    /// Save BOTH tokens
-    await TokenStorage.saveTokens(
-      accessToken: model.xToken,
-      refreshToken: model.rToken ?? "",
-    );
+  final model =
+      LoginResponseModel.fromJson(response.data);
 
-    return model;
-  }
+  await TokenStorage.saveAccessToken(model.xToken);
+
+  return model;
+}
 
   Future<UserModel> getProfile() async {
 
@@ -47,7 +45,7 @@ class AuthRepository {
     await _apiService.logout();
 
     await TokenStorage.clearToken();
-
+    
   }
 
 }

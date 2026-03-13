@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:futura_crm_app/core/naviagtion/app_router.dart';
+import 'package:futura_crm_app/core/network/dio_client.dart';
+import 'package:futura_crm_app/core/theme/app_theme.dart';
 
 import 'package:futura_crm_app/features/auth/view_model.dart/auth_view_model.dart';
+import 'package:futura_crm_app/features/leads/view_model/leads_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'features/auth/view/splash_screen.dart';
 
-void main() async{
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  await DioClient.init();
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => AuthViewModel())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthViewModel()),
+        ChangeNotifierProvider(create: (_)=> LeadsViewModel())
+        ],
       child: const MyApp(),
     ),
   );
@@ -23,18 +30,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
 
-      theme: ThemeData(
-        primaryColor: const Color(0xFF562B80),
-
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF562B80)),
-
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF562B80),
-          foregroundColor: Colors.white,
-        ),
-      ),
-
-      home: const SplashScreen(),
+      theme:AppTheme.lightTheme,
+      initialRoute: MyAppRouter.splash,
+      onGenerateRoute: MyAppRouter.generateRoute,
     );
   }
 }
